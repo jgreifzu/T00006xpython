@@ -58,6 +58,8 @@ class LCD:
         self.ser.flush()
         self.clear_screen()
         self.move_home()
+        self.current_text = [""] * 32
+        self.cur_pos = 0
         print("init")
         
         
@@ -72,6 +74,8 @@ class LCD:
         
     def clear_screen(self):
         self.command(0x58)
+        self.current_text = [""] * 32
+        self.cur_pos = 0
         
     def move_home(self):
         self.command(0x48)
@@ -86,12 +90,33 @@ class LCD:
     def display_text(self, text):
         print("sending: " + text)
         self.ser.write(text.encode('utf-8'))
+        for i in range(len(text)):
+            print("loop: " + str(i))
+            print("text[i] = " + text[i])
+            print("cur_pos = " + str(self.cur_pos))
+            print("current_text pos = " + self.current_text[i + self.cur_pos])
+            print("\n")
+            self.current_text[self.cur_pos] = text[i]
+            self.cur_pos = self.cur_pos + 1
     
     def set_cursor_pos(self, col, row):
         self.command(0x47, [col,row])
         
+    def move_cursor_fwd(self):
+        self.command(0x4D)
+        
+    def move_cursor_rev(self):
+        self.command(0x4C)    
+        
+        
         
 
 screen = LCD()
-screen.display_text("Hell222o")
+screen.display_text("123")
+screen.display_text("456")
+screen.display_text("456")
+screen.display_text("456")
+
+print(screen.current_text)
+
 
